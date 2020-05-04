@@ -1,5 +1,6 @@
 package com.nure.server;
 
+import com.nure.database.repositories.impl.MessageRepository;
 import com.nure.database.repositories.impl.UserRepository;
 import com.nure.domain.Message;
 import com.nure.parsers.MessageBuilder;
@@ -11,13 +12,13 @@ import java.io.*;
 import java.net.Socket;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Slf4j
 public class ServerThread extends Thread {
     private final UserRepository userRepository = UserRepository.getInstance();
+    private final MessageRepository messageRepository = MessageRepository.getInstance();
     private final Socket socket;
     private final AtomicInteger messageId;
     private final Map<Long, Message> messageList;
@@ -37,19 +38,31 @@ public class ServerThread extends Thread {
     @Override
     public void run() {
         log.debug("New socked thread is starting");
-        while (true) {
-            Thread.sleep(1000);
-            try {
+        try {
+            while (true) {
+                Thread.sleep(1000);
+                String response;
+                String login;
+
                 String requestLine = in.readLine();
                 log.debug("Request line : {}", requestLine);
                 switch (requestLine) {
+                    //TODO: check if user is not already online
                     case "CONNECT":
                         log.debug("connect");
-                        String login = in.readLine();
+                        login = in.readLine();
                         String password = in.readLine();
-                        String response = userRepository.tryLogin(login, password);
+                        response = userRepository.tryLogin(login, password);
                         if (response.equals("")) response = "OK";
                         out.println(response);
+                        out.flush();
+                        break;
+                    case "ONLINE":
+                        log.debug("online");
+                        String except = in.readLine();
+                        response = MessageBuilder.getOnlineExcept(except);
+                        out.println(response);
+                        out.println("END");
                         out.flush();
                         break;
                     case "GET":
@@ -67,6 +80,8 @@ public class ServerThread extends Thread {
                         break;
                     case "PUT":
                         log.debug("put");
+                        String from = in.readLine();
+                        String to = in.readLine();
                         requestLine = in.readLine();
                         StringBuilder mesStr = new StringBuilder();
                         while (!"END".equals(requestLine)) {
@@ -74,12 +89,10 @@ public class ServerThread extends Thread {
                             requestLine = in.readLine();
                         }
                         log.debug("Message string : {}", mesStr);
-                        List<Message> newMessages = MessageParser.getMessageList(mesStr.toString());
-                        for (Message message : newMessages) {
-                            messageList.put((long) message.getId(), message);
-                        }
-                        out.println("OK");
-                        out.flush();
+                        Message message = MessageParser.parseMessage(from, to, mesStr.toString());
+                        messageRepository.saveMessage(message);
+//                        out.println("OK");
+//                        out.flush();
                         break;
                     default:
                         log.info("Unknown request : {}", requestLine);
@@ -87,21 +100,22 @@ public class ServerThread extends Thread {
                         out.flush();
                         break;
                 }
-            } catch (Exception e) {
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            out.println("ERROR HAS OCCURRED");
+            out.flush();
+        } finally {
+            try {
+                socket.close();
+                log.debug("Socket closed");
+                in.close();
+                out.close();
+            } catch (IOException e) {
+                log.error("Cannot close socket");
                 log.error(e.getMessage());
-                out.println("ERROR HAS OCCURED");
-                out.flush();
-            } finally {
-                try {
-                    socket.close();
-                    log.debug("Socket closed");
-                    in.close();
-                    out.close();
-                } catch (IOException e) {
-                    log.error("Cannot close socket");
-                    log.error(e.getMessage());
-                }
             }
         }
     }
 }
+

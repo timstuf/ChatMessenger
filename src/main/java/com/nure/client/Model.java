@@ -45,7 +45,7 @@ public class Model{
                 //Get controller of scene2
                 MessengerController scene2Controller = loader.getController();
                 //Pass whatever data you want. You can have multiple method calls here
-                scene2Controller.getUser(login);
+                scene2Controller.setModel(login, socket);
 
                 //Show scene 2 in new window
                 Stage stage = new Stage();

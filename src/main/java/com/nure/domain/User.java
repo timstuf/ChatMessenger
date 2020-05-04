@@ -32,11 +32,11 @@ public class User {
     private Status status;
 
     @OneToMany(mappedBy = "userFrom")
-    @JsonBackReference
+    @JsonBackReference(value = "sent")
     private List<Message> sentMessages = new ArrayList<>();
 
     @OneToMany(mappedBy = "userTo")
-    @JsonBackReference
+    @JsonBackReference(value = "received")
     private List<Message> received = new ArrayList<>();
 
     public User(String login, String password) {

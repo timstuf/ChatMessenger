@@ -1,6 +1,5 @@
 package com.nure.domain;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,9 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Check;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Check(constraints = "sender_id <> receiver_id")
 @AllArgsConstructor
@@ -34,12 +31,12 @@ public class Message implements Comparable<Message> {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "sender_id", nullable = false)
-    @JsonManagedReference
+    // @JsonManagedReference(value = "sent")
     private User userFrom;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "receiver_id", nullable = false)
-    @JsonManagedReference
+    //@JsonManagedReference(value = "received")
     private User userTo;
     @Column(nullable = false)
     private String text;
