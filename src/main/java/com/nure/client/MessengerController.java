@@ -44,12 +44,12 @@ public class MessengerController implements Initializable {
         model = new MessengerModel(userRepository.getUserByLogin(name).orElseThrow(()->new NoUserException(name)));
         this.name.setText(model.getUserLogin());
 
-        chatList.setItems(observableList);
+        //chatList.setItems(observableList);
     }
     public void showChatMessages(MouseEvent mouseEvent) {
         User user2 = User.asObject(chatList.getSelectionModel().getSelectedItem());
-        Chat chat = new Chat(user2, user);
-        String messages = MessageBuilder.createDocument(messageRepository.getAllMessagesInChat(chat));
+        //Chat chat = new Chat(user2, user);
+        String messages ="";// MessageBuilder.createDocument(messageRepository.getAllMessagesInChat(chat));
         textMessages.setText(messages);
     }
 }

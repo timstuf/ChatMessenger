@@ -1,6 +1,7 @@
 package com.nure.client;
 
 import com.nure.database.repositories.impl.UserRepository;
+import com.nure.util.Constants;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,42 +13,33 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ResourceBundle;
 
 @Slf4j
 public class AuthorizationController implements Initializable {
     @FXML
     public TextField password;
-    private UserRepository userRepository = UserRepository.getInstance();
+    private Model model;
     @FXML
     private Label success;
     @FXML
     private TextField login;
 
+
     public void showLogin(ActionEvent event) {
         if (login.getText().equals("") || password.getText().equals(""))
             success.setText("Please input login and password");
-        String bool = userRepository.tryLogin(login.getText(), password.getText());
-        if(bool.equals("")) try {
-            //Load second scene
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client.fxml"));
-            Parent root = loader.load();
 
-            //Get controller of scene2
-            MessengerController scene2Controller = loader.getController();
-            //Pass whatever data you want. You can have multiple method calls here
-            scene2Controller.getUser(login.getText());
+        if (model == null) model = new Model(Constants.IP);
 
-            //Show scene 2 in new window
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Second Window");
-            stage.show();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        model.logIn(login.getText(), password.getText());
 
     }
 

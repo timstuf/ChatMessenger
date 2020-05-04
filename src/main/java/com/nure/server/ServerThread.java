@@ -1,8 +1,10 @@
 package com.nure.server;
 
+import com.nure.database.repositories.impl.UserRepository;
 import com.nure.domain.Message;
 import com.nure.parsers.MessageBuilder;
 import com.nure.parsers.MessageParser;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class ServerThread extends Thread {
+    private final UserRepository userRepository = UserRepository.getInstance();
     private final Socket socket;
     private final AtomicInteger messageId;
     private final Map<Long, Message> messageList;
@@ -30,62 +33,74 @@ public class ServerThread extends Thread {
         start();
     }
 
+    @SneakyThrows
     @Override
     public void run() {
-        try {
-            log.debug("New socked thread is starting");
-            String requestLine = in.readLine();
-            log.debug("Request line : {}", requestLine);
-            switch (requestLine) {
-                case "GET":
-                    log.debug("get");
-                    Long lastId = Long.valueOf(in.readLine());
-                    log.debug("last message id : {}", lastId);
-                    List<Message> messages = messageList.entrySet().stream()
-                            .filter(mes -> mes.getKey().compareTo(lastId)>0)
-                            .map(Map.Entry::getValue).collect(Collectors.toList());
-
-                    String content = MessageBuilder.createDocument(messages);
-                    out.println(content);
-                    out.println("END");
-                    out.flush();
-                    break;
-                case "PUT":
-                    log.debug("put");
-                    requestLine = in.readLine();
-                    StringBuilder mesStr = new StringBuilder();
-                    while(! "END".equals(requestLine)){
-                        mesStr.append(requestLine);
-                        requestLine = in.readLine();
-                    }
-                    log.debug("Message string : {}", mesStr);
-                    List<Message> newMessages =MessageParser.getMessageList(mesStr.toString());
-                    for (Message message: newMessages) {
-                        messageList.put((long) message.getId(), message);
-                    }
-                    out.println("OK");
-                    out.flush();
-                    break;
-                default:
-                    log.info("Unknown request : {}", requestLine);
-                    out.println("Unknow request");
-                    out.flush();
-                    break;
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            out.println("ERROR HAS OCCURED");
-            out.flush();
-        }
-        finally {
+        log.debug("New socked thread is starting");
+        while (true) {
+            Thread.sleep(1000);
             try {
-                socket.close();
-                log.debug("Socket closed");
-                in.close();
-                out.close();
-            } catch (IOException e) {
-                log.error("Cannot close socket");
+                String requestLine = in.readLine();
+                log.debug("Request line : {}", requestLine);
+                switch (requestLine) {
+                    case "CONNECT":
+                        log.debug("connect");
+                        String login = in.readLine();
+                        String password = in.readLine();
+                        String response = userRepository.tryLogin(login, password);
+                        if (response.equals("")) response = "OK";
+                        out.println(response);
+                        out.flush();
+                        break;
+                    case "GET":
+                        log.debug("get");
+                        Long lastId = Long.valueOf(in.readLine());
+                        log.debug("last message id : {}", lastId);
+                        List<Message> messages = messageList.entrySet().stream()
+                                .filter(mes -> mes.getKey().compareTo(lastId) > 0)
+                                .map(Map.Entry::getValue).collect(Collectors.toList());
+
+                        String content = MessageBuilder.createDocument(messages);
+                        out.println(content);
+                        out.println("END");
+                        out.flush();
+                        break;
+                    case "PUT":
+                        log.debug("put");
+                        requestLine = in.readLine();
+                        StringBuilder mesStr = new StringBuilder();
+                        while (!"END".equals(requestLine)) {
+                            mesStr.append(requestLine);
+                            requestLine = in.readLine();
+                        }
+                        log.debug("Message string : {}", mesStr);
+                        List<Message> newMessages = MessageParser.getMessageList(mesStr.toString());
+                        for (Message message : newMessages) {
+                            messageList.put((long) message.getId(), message);
+                        }
+                        out.println("OK");
+                        out.flush();
+                        break;
+                    default:
+                        log.info("Unknown request : {}", requestLine);
+                        out.println("Unknown request");
+                        out.flush();
+                        break;
+                }
+            } catch (Exception e) {
                 log.error(e.getMessage());
+                out.println("ERROR HAS OCCURED");
+                out.flush();
+            } finally {
+                try {
+                    socket.close();
+                    log.debug("Socket closed");
+                    in.close();
+                    out.close();
+                } catch (IOException e) {
+                    log.error("Cannot close socket");
+                    log.error(e.getMessage());
+                }
             }
         }
     }

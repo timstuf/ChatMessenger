@@ -4,6 +4,7 @@ import com.nure.database.repositories.impl.MessageRepository;
 import com.nure.database.repositories.impl.UserRepository;
 import com.nure.domain.Message;
 import com.nure.parsers.MessageBuilder;
+import com.nure.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
@@ -19,9 +20,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.nure.util.Constants.PORT;
+
 @Slf4j
 public class Server {
-    private static final int PORT = 3434;
     private static volatile boolean stop = false;
     private static final int TIMEOUT = 500;
     private static Map<Long, Message> messages = new ConcurrentHashMap<>();
