@@ -2,8 +2,6 @@ package com.nure.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.nure.database.repositories.impl.UserRepository;
-import com.nure.exceptions.NoUserException;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -43,10 +41,6 @@ public class User {
         this.login = login;
         this.password = password;
         this.status = Status.ACTIVE;
-    }
-    public static User asObject(String name){
-        UserRepository userRepository = UserRepository.getInstance();
-                return userRepository.getUserByLogin(name).orElseThrow(()-> new NoUserException(name));
     }
     public enum Status {ACTIVE, LOGGED_OUT}
 }

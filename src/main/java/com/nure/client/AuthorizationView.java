@@ -7,8 +7,10 @@ import javafx.stage.Stage;
 import lombok.NoArgsConstructor;
 
 import java.io.IOException;
+
 @NoArgsConstructor
 public class AuthorizationView extends javafx.application.Application{
+    //TODO: all logout button and logout on close
     @Override
     public void start(Stage primaryStage) {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/signin.fxml"));
@@ -23,6 +25,7 @@ public class AuthorizationView extends javafx.application.Application{
             stage.setScene(new Scene(root));
         else throw new IllegalArgumentException();
         stage.setTitle("Second Window");
+
         stage.show();
     }
 }

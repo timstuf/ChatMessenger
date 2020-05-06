@@ -1,15 +1,14 @@
 package com.nure.server;
 
+import com.nure.database.repositories.impl.ChatRepository;
 import com.nure.database.repositories.impl.MessageRepository;
 import com.nure.database.repositories.impl.UserRepository;
+import com.nure.domain.Chat;
 import com.nure.domain.Message;
-import com.nure.parsers.MessageBuilder;
-import com.nure.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -17,8 +16,6 @@ import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.nure.util.Constants.PORT;
 
@@ -26,56 +23,60 @@ import static com.nure.util.Constants.PORT;
 public class Server {
     private static volatile boolean stop = false;
     private static final int TIMEOUT = 500;
-    private static Map<Long, Message> messages = new ConcurrentHashMap<>();
-    private static AtomicInteger id = new AtomicInteger(0);
+    private static Map<Chat, List<Message>> messages = new ConcurrentHashMap<>();
     private static UserRepository userRepository = UserRepository.getInstance();
+    private static MessageRepository messageRepository = MessageRepository.getInstance();
+    private static ChatRepository chatRepository = ChatRepository.getInstance();
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException {
         loadPreviousMessages();
         quitCommandThread();
         ServerSocket serverSocket = new ServerSocket(PORT);
         log.info("started on {}", PORT);
         while (!stop) {
-            Thread.sleep(100);
-            //serverSocket.setSoTimeout(TIMEOUT);
+            //Thread.sleep(100);
+            serverSocket.setSoTimeout(TIMEOUT);
             Socket socket;
 
             try {
                 socket = serverSocket.accept();
                 try {
-                    new ServerThread(socket, id, messages);
+                    new ServerThread(socket, messages);
                 } catch (IOException e) {
                     log.error(e.getMessage());
+                    socket.close();
                 }
             } catch (SocketTimeoutException e) {
-                log.error(e.getMessage());
             }
         }
         log.info("Server stopped");
         userRepository.logEveryoneOut();
+        saveAllNewMessages();
+    }
+
+    private static void saveAllNewMessages() {
+        chatRepository.saveAllNewMessages(messages);
     }
 
     private static void loadPreviousMessages() {
-        List<Message> previousMessages = MessageBuilder.loadAllPreviousMessagesInList();
-        for (Message message : previousMessages) {
-            messages.put(message.getId(), message);
-        }
+        messages.putAll(chatRepository.getAllMessagesInAllChats());
     }
 
     private static void quitCommandThread() {
         new Thread(() -> {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             while (true) {
                 String buf;
                 try {
-                    buf = reader.readLine();
-                    if (buf.equals("quit")) {
+                    buf = br.readLine();
+                    if ("quit".equals(buf)) {
                         stop = true;
                         break;
-                    } else
-                        log.warn("Type 'quit' for server termination");
+                    } else {
+                        log.warn("Type 'quit' for exit termination");
+                    }
                 } catch (IOException e) {
-                    log.error(e.getMessage());
+                    e.printStackTrace();
                 }
             }
         }).start();

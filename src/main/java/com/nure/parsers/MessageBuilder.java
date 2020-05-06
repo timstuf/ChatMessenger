@@ -31,9 +31,7 @@ public class MessageBuilder {
         ObjectMapper mapper = new ObjectMapper();
         try {
             User user = userRepository.getUserByLogin(login).orElseThrow(() -> new NoUserException(login));
-            String result = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(userRepository.findActiveUsersExceptOne(user));
-            log.debug("Serialized online users : {}", result);
-            return result;
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(userRepository.findActiveUsersExceptOne(user));
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
         }
@@ -44,7 +42,7 @@ public class MessageBuilder {
         return messageRepository.getAllMessages();
     }
 
-    public static String createDocument(List<Message> messages){
+    public static String showPrettyInChat(List<Message> messages) {
         StringBuilder strMessages = new StringBuilder();
         for (Message message:messages) {
             String mes = message.getSentTime()+ "    "+message.getUserFrom().getLogin()+":    "+message.getText()+'\n';
@@ -52,5 +50,17 @@ public class MessageBuilder {
             strMessages.append(mes);
         }
         return strMessages.toString();
+    }
+
+    public static String convertToJson(List<Message> messages) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String result = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(messages);
+            log.debug("Serialized online users : {}", result);
+            return result;
+        } catch (JsonProcessingException e) {
+            log.error(e.getMessage());
+        }
+        return "";
     }
 }

@@ -15,7 +15,7 @@ import java.util.ResourceBundle;
 public class AuthorizationController implements Initializable {
     @FXML
     public TextField password;
-    private Model model;
+    private AuthorizationModel model;
     @FXML
     private Label success;
     @FXML
@@ -26,7 +26,7 @@ public class AuthorizationController implements Initializable {
         //if (login.getText().equals("") || password.getText().equals(""))
         // success.setText("Please input login and password");
 
-        if (model == null) model = new Model(Constants.IP);
+        if (model == null) model = new AuthorizationModel(Constants.IP);
 
         //model.logIn(login.getText(), password.getText());
         model.logIn("adm", "adm");

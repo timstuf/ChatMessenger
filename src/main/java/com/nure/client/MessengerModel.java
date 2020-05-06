@@ -1,60 +1,57 @@
 package com.nure.client;
 
-import com.nure.database.repositories.impl.UserRepository;
-import com.nure.parsers.MessageParser;
+import com.nure.client.timers.UpdateList;
+import com.nure.util.Constants;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.*;
 
+@Getter
 @Slf4j
 public class MessengerModel {
     private BufferedWriter out;
     private BufferedReader in;
     private Socket socket;
     private String login;
-    private UserRepository userRepository = UserRepository.getInstance();
-
+    @Setter
+    private Map<String, String> chatMessages = new HashMap<>();
+    private MessengerController controller;
+    private List<String> onlineUsers = new ArrayList<>();
     private ObservableList<String> observableList = FXCollections.observableArrayList();
 
-    public MessengerModel(String login, Socket socket) {
+    public MessengerModel(String login, Socket socket, MessengerController controller) {
         this.socket = socket;
         this.login = login;
+        this.controller = controller;
         try {
             out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //observableList.addAll(userRepository.findActiveUsersExceptOne(user).stream().map(User::getLogin).collect(Collectors.toList()));
-    }
-    public String getUserLogin(){
-        return login;
+        new Timer().scheduleAtFixedRate(new UpdateList(this),
+                Constants.DELAY, Constants.PERIOD);
     }
 
-    //TODO: add timer to refresh the list every n seconds
+    public void setOnlineUsers(List<String> onlineUsers) {
+        this.onlineUsers = onlineUsers;
+        observableList.setAll(onlineUsers);
+    }
+
     public ObservableList<String> showOnline() {
-        try {
-            out.write("ONLINE" + "\n");
-            out.write(login + "\n");
-            out.flush();
-            StringBuilder answer = new StringBuilder();
-            String line = in.readLine();
-            while (!line.equals("END")) {
-                answer.append(line);
-                line = in.readLine();
-            }
-
-            log.debug("answer: {}", answer.toString());
-            observableList.addAll(MessageParser.getUsers(answer.toString()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        observableList.setAll(onlineUsers);
         return observableList;
+    }
 
+    public String showChatMessages(String anotherUser) {
+        return chatMessages.get(anotherUser);
     }
 
     @SneakyThrows

@@ -12,12 +12,13 @@ import java.net.Socket;
 
 
 @Slf4j
-public class Model{
+public class AuthorizationModel {
     private static BufferedWriter out;
     private static BufferedReader in;
     private String login;
     private Socket socket;
-    public Model(String host) {
+
+    public AuthorizationModel(String host) {
         try{
             socket = new Socket(host, Constants.PORT);
             out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));

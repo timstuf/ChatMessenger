@@ -4,20 +4,11 @@ import com.nure.domain.Chat;
 import com.nure.domain.User;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UserRepositoryTest {
 
-    @Test
-    void getAllChats() {
-        UserRepository userRepository = UserRepository.getInstance();
-        List<Chat> chats =
-                userRepository.getAllChats();
-        chats.size();
-    }
+
     @Test
     void checkForEquality(){
         UserRepository userRepository = UserRepository.getInstance();

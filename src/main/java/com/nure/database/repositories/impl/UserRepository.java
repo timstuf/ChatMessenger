@@ -2,14 +2,13 @@ package com.nure.database.repositories.impl;
 
 import com.nure.database.ConnectionFactory;
 import com.nure.database.repositories.Repository;
-import com.nure.domain.Chat;
-import com.nure.domain.Message;
 import com.nure.domain.User;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
-import javax.swing.plaf.synth.SynthRootPaneUI;
-import java.util.*;
-import java.util.stream.Collectors;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -69,26 +68,7 @@ public class UserRepository implements Repository {
             log.error(e.getMessage());
         }
     }
-    public List<Chat> getAllChats(){
-        List<Chat> chats = new ArrayList<>();
-        List<User> userList;
-        try (Session session = ConnectionFactory.sessionFactory.openSession()) {
-            session.beginTransaction();
-            userList = session.createQuery("from User").list();
-            for (User user:userList) {
-                List<User> usersTo = user.getSentMessages().stream().map(Message::getUserTo).collect(toList());
-                for (User userTo:usersTo) {
-                    Chat chat = new Chat(user, userTo);
-                    if(chats.stream().noneMatch(x->x.equals(chat)))
-                        chats.add(chat);
-                }
-            }
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-        return chats;
-    }
+
     public List<User> findActiveUsersExceptOne(User author){
         List<User> users = new ArrayList<>();
         try (Session session = ConnectionFactory.sessionFactory.openSession()) {

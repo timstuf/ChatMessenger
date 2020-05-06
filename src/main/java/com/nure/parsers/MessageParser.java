@@ -27,6 +27,16 @@ public class MessageParser {
         return new ArrayList<>();
     }
 
+    public static String displayInChat(String list) {
+        List<Message> messages = getMessageList(list);
+        StringBuilder strMessages = new StringBuilder();
+        for (Message message : messages) {
+            String mes = message.getSentTime() + "    " + message.getUserFrom().getLogin() + ":    " + message.getText() + '\n';
+            log.debug("Message: {}", mes);
+            strMessages.append(mes);
+        }
+        return strMessages.toString();
+    }
     public static Message parseMessage(String from, String to, String message) {
         User userFrom = userRepository.getUserByLogin(from).orElseThrow(() -> new NoUserException(from));
         User userTo = userRepository.getUserByLogin(to).orElseThrow(() -> new NoUserException(to));
