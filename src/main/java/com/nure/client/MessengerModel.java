@@ -37,7 +37,11 @@ public class MessengerModel {
             e.printStackTrace();
         }
         new Timer().scheduleAtFixedRate(new UpdateList(this),
-                Constants.DELAY, Constants.PERIOD);
+                Constants.ONLINE_DELAY, Constants.ONLINE_PERIOD);
+//        new Timer().scheduleAtFixedRate(new UpdateOnlineList(this),
+//                Constants.ONLINE_DELAY, Constants.ONLINE_PERIOD);
+//        new Timer().scheduleAtFixedRate(new UpdateMessageList(this),
+//                Constants.MESSAGE_DELAY, Constants.MESSAGE_PERIOD);
     }
 
     public void setOnlineUsers(List<String> onlineUsers) {

@@ -24,13 +24,16 @@ public class ServerThread extends Thread {
     private final Map<Chat, List<Message>> messages;
     private final BufferedReader in;
     private final PrintWriter out;
+    private final ClientList clientList;
+    private String user;
 
-    public ServerThread(Socket socket, Map<Chat, List<Message>> messageList) throws IOException {
+    public ServerThread(Socket socket, Map<Chat, List<Message>> messageList, ClientList clientList) throws IOException {
         this.socket = socket;
         // this.messageList = messageList;
         this.messages = messageList;
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())));
+        this.clientList = clientList;
         start();
     }
 
@@ -41,38 +44,52 @@ public class ServerThread extends Thread {
         try {
             while (true) {
                 Thread.sleep(1000);
-                String response;
-                String login;
-                String from;
-                String to;
+                String login, from, to, response, password;
                 Chat chat;
                 String requestLine = in.readLine();
-                log.debug("Request line : {}", requestLine);
+                //log.debug("Request line : {}", requestLine);
                 switch (requestLine) {
                     //TODO: check if user is not already online
                     case "CONNECT":
-                        log.debug("connect");
+                        //log.debug("connect");
                         login = in.readLine();
-                        String password = in.readLine();
+                        password = in.readLine();
                         response = userRepository.tryLogin(login, password);
-                        if (response.equals("")) response = "OK";
+                        if (response.equals("")) {
+                            response = "OK";
+                            clientList.addName(login);
+                            user = login;
+                        }
+                        out.println(response);
+                        out.flush();
+                        break;
+                    case "NEW":
+                        //log.debug("new");
+                        login = in.readLine();
+                        password = in.readLine();
+                        response = userRepository.registerUser(login, password);
+                        if (response.equals("")) {
+                            response = "OK";
+                            clientList.addName(login);
+                            user = login;
+                        }
                         out.println(response);
                         out.flush();
                         break;
                     case "ONLINE":
-                        log.debug("online");
+                        //log.debug("online");
                         String except = in.readLine();
-                        response = MessageBuilder.getOnlineExcept(except);
-                        out.println(response);
+                        response = clientList.getOnlineExcept(user);
+                        out.println(response + "\n");
                         out.println("END");
                         out.flush();
                         break;
                     case "GET":
-                        log.debug("get");
+                        //log.debug("get");
                         from = in.readLine();
                         to = in.readLine();
                         chat = Chat.asObject(from + " --- " + to);
-                        out.println(MessageBuilder.convertToJson(messages.get(chat)));
+                        out.println(MessageBuilder.convertToJson(messages.get(chat)) + "\n");
                         out.println("END");
                         out.flush();
                         break;
@@ -106,6 +123,7 @@ public class ServerThread extends Thread {
         } finally {
             try {
                 socket.close();
+                clientList.removeName(user);
                 log.debug("Socket closed");
                 in.close();
                 out.close();

@@ -8,19 +8,16 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
 import java.util.TimerTask;
 
-
 @Slf4j
-public class UpdateList extends TimerTask {
+public class UpdateMessageList extends TimerTask {
     private MessengerModel model;
     private BufferedWriter out;
     private BufferedReader in;
     private String login;
 
-    public UpdateList(MessengerModel model) {
+    public UpdateMessageList(MessengerModel model) {
         this.model = model;
         out = model.getOut();
         in = model.getIn();
@@ -29,7 +26,6 @@ public class UpdateList extends TimerTask {
 
     @Override
     public void run() {
-        updateOnlineList();
         updateChatMessages();
     }
 
@@ -65,29 +61,5 @@ public class UpdateList extends TimerTask {
         }
     }
 
-    private void updateOnlineList() {
-        try {
-            Optional<String> lastSelection = model.getController().getSelectedUser();
-            model.getOut().write("ONLINE" + "\n");
-            out.write(login + "\n");
-            out.flush();
-            StringBuilder answer = new StringBuilder();
-            String line = in.readLine();
-            while (!line.equals("END")) {
-                answer.append(line);
-                line = in.readLine();
-            }
-            List<String> lastList = model.getOnlineUsers();
-            List<String> newList = MessageParser.getUsers(answer.toString());
-            if (!lastList.equals(newList)) {
-                Platform.runLater(() -> {
-                    model.setOnlineUsers(newList);
-                    model.getController().showOnline(model.getObservableList(), lastSelection);
-                });
-                log.debug("List of online users changed: {}", answer.toString());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+
 }

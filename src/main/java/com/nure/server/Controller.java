@@ -2,7 +2,6 @@ package com.nure.server;
 
 import com.nure.database.repositories.impl.ChatRepository;
 import com.nure.database.repositories.impl.MessageRepository;
-import com.nure.database.repositories.impl.UserRepository;
 import com.nure.domain.Chat;
 import com.nure.parsers.MessageBuilder;
 import javafx.collections.FXCollections;
@@ -23,7 +22,6 @@ public class Controller implements Initializable {
     @FXML
     private ListView<String> chatList;
     private ObservableList<String> observableList = FXCollections.observableArrayList();
-    private UserRepository userRepository = UserRepository.getInstance();
     private ChatRepository chatRepository = ChatRepository.getInstance();
     private MessageRepository messageRepository = MessageRepository.getInstance();
     @Override

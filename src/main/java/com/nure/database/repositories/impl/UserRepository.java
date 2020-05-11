@@ -42,7 +42,9 @@ public class UserRepository implements Repository {
     public void saveUser(User user) {
         save(user);
     }
-    public String registerUser(User user){
+
+    public String registerUser(String login, String password) {
+        User user = new User(login, password);
         if(!isLoginValid(user.getLogin())) return "User with specified login already exists";
         try(Session session = ConnectionFactory.sessionFactory.openSession()){
             session.beginTransaction();
@@ -52,7 +54,7 @@ public class UserRepository implements Repository {
             log.error(e.getMessage());
             return "Error: "+e.getMessage();
         }
-        return "Success";
+        return "";
     }
     public void logEveryoneOut(){
         List<User> users;

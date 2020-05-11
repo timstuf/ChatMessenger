@@ -1,5 +1,9 @@
 package com.nure.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.nure.domain.json.LocalDateDeserializer;
+import com.nure.domain.json.LocalDateSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -41,6 +45,8 @@ public class Message implements Comparable<Message> {
     @Column(nullable = false)
     private String text;
     @Column(name = "sent_time", nullable = false)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDateTime sentTime;
 
     @Override

@@ -12,15 +12,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.TimerTask;
 
-
 @Slf4j
-public class UpdateList extends TimerTask {
+public class UpdateOnlineList extends TimerTask {
     private MessengerModel model;
     private BufferedWriter out;
     private BufferedReader in;
     private String login;
 
-    public UpdateList(MessengerModel model) {
+    public UpdateOnlineList(MessengerModel model) {
         this.model = model;
         out = model.getOut();
         in = model.getIn();
@@ -30,39 +29,6 @@ public class UpdateList extends TimerTask {
     @Override
     public void run() {
         updateOnlineList();
-        updateChatMessages();
-    }
-
-    void updateChatMessages() {
-        if (!model.getController().getSelectedUser().isPresent()) {
-        } else {
-            String user2 = model.getController().getSelectedUser().get();
-            try {
-                out.write("GET" + "\n");
-                out.write(login + "\n");
-                out.write(user2 + "\n");
-                out.flush();
-                StringBuilder answer = new StringBuilder();
-                String line = in.readLine();
-                while (!line.equals("END")) {
-                    answer.append(line);
-                    line = in.readLine();
-                }
-                String lastList = model.getChatMessages().getOrDefault(user2, "");
-                String newList;
-                newList = MessageParser.displayInChat(answer.toString());
-                model.getChatMessages().put(user2, newList);
-                if (!lastList.equals(newList)) {
-                    Platform.runLater(() -> {
-                        model.getController().showChatMessages(newList);
-                    });
-                    log.debug("List of messages changed: {}", answer.toString());
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
     }
 
     private void updateOnlineList() {
@@ -84,6 +50,7 @@ public class UpdateList extends TimerTask {
                     model.setOnlineUsers(newList);
                     model.getController().showOnline(model.getObservableList(), lastSelection);
                 });
+
                 log.debug("List of online users changed: {}", answer.toString());
             }
         } catch (IOException e) {

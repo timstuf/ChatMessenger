@@ -17,9 +17,7 @@ public class MessageBuilder {
         MessageRepository messageRepository = MessageRepository.getInstance();
         ObjectMapper mapper = new ObjectMapper();
         try {
-            String result =  mapper.writerWithDefaultPrettyPrinter().writeValueAsString(messageRepository.getAllMessages());
-            log.debug("Serialized messages : {}", result);
-            return result;
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(messageRepository.getAllMessages());
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
         }
@@ -46,7 +44,6 @@ public class MessageBuilder {
         StringBuilder strMessages = new StringBuilder();
         for (Message message:messages) {
             String mes = message.getSentTime()+ "    "+message.getUserFrom().getLogin()+":    "+message.getText()+'\n';
-            log.debug("Message: {}", mes);
             strMessages.append(mes);
         }
         return strMessages.toString();
@@ -55,9 +52,7 @@ public class MessageBuilder {
     public static String convertToJson(List<Message> messages) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            String result = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(messages);
-            log.debug("Serialized online users : {}", result);
-            return result;
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(messages);
         } catch (JsonProcessingException e) {
             log.error(e.getMessage());
         }

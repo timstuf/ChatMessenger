@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -18,6 +19,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private Long id;
+
 
     @Column(unique = true, nullable = false)
     private String login;
@@ -41,6 +43,21 @@ public class User {
         this.login = login;
         this.password = password;
         this.status = Status.ACTIVE;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id.equals(user.id) &&
+                login.equals(user.login) &&
+                password.equals(user.password);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, login, password);
     }
     public enum Status {ACTIVE, LOGGED_OUT}
 }

@@ -29,7 +29,9 @@ public class AuthorizationController implements Initializable {
         if (model == null) model = new AuthorizationModel(Constants.IP);
 
         //model.logIn(login.getText(), password.getText());
-        model.logIn("adm", "adm");
+        if (login.getText().equals("") || password.getText().equals(""))
+            model.logIn("adm", "adm");
+        else model.logIn(login.getText(), password.getText());
 
     }
 
@@ -41,5 +43,6 @@ public class AuthorizationController implements Initializable {
     public void registerUser(ActionEvent event) {
         if (login.getText().equals("") || password.getText().equals(""))
             success.setText("Please input login and password");
+        else model.registerUser(login.getText(), password.getText());
     }
 }

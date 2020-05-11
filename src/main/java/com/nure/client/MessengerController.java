@@ -4,10 +4,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 
 import java.net.Socket;
@@ -17,7 +14,7 @@ import java.util.ResourceBundle;
 
 public class MessengerController implements Initializable {
     @FXML
-    public Label textMessages;
+    public ScrollPane textMessages;
     private MessengerModel model;
     @FXML
     public Label name;
@@ -44,15 +41,18 @@ public class MessengerController implements Initializable {
     }
     public void showChatMessages(MouseEvent mouseEvent) {
         String user2 = chatList.getSelectionModel().getSelectedItem();
-        textMessages.setText(model.showChatMessages(user2));
+        Label text = new Label(model.showChatMessages(user2));
+        textMessages.setContent(text);
     }
 
     public void showChatMessages(String messages) {
-        textMessages.setText(messages);
+        Label text = new Label(messages);
+        textMessages.setContent(text);
     }
 
-    public void showOnline(ObservableList<String> list) {
+    public void showOnline(ObservableList<String> list, Optional<String> selection) {
         chatList.setItems(list);
+        selection.ifPresent(s -> chatList.getSelectionModel().select(s));
     }
 
 

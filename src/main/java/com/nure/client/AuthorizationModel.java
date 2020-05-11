@@ -61,4 +61,35 @@ public class AuthorizationModel {
         return answer;
     }
 
+    public String registerUser(String login, String password) {
+        String answer = "";
+        try {
+            out.write("NEW" + "\n");
+            out.write(login + "\n");
+            out.write(password + "\n");
+            out.flush();
+            answer = in.readLine();
+            log.debug("answer: {}", answer);
+            if (answer.equals("OK")) {
+                //Load second scene
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/client.fxml"));
+                Parent root = loader.load();
+
+                //Get controller of scene2
+                MessengerController scene2Controller = loader.getController();
+                //Pass whatever data you want. You can have multiple method calls here
+                scene2Controller.setModel(login, socket);
+
+                //Show scene 2 in new window
+                Stage stage = new Stage();
+                stage.setScene(new Scene(root));
+                stage.setTitle("Second Window");
+                stage.show();
+                answer = "";
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return answer;
+    }
 }

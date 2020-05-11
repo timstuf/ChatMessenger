@@ -1,7 +1,6 @@
 package com.nure.server;
 
 import com.nure.database.repositories.impl.ChatRepository;
-import com.nure.database.repositories.impl.MessageRepository;
 import com.nure.database.repositories.impl.UserRepository;
 import com.nure.domain.Chat;
 import com.nure.domain.Message;
@@ -25,7 +24,7 @@ public class Server {
     private static final int TIMEOUT = 500;
     private static Map<Chat, List<Message>> messages = new ConcurrentHashMap<>();
     private static UserRepository userRepository = UserRepository.getInstance();
-    private static MessageRepository messageRepository = MessageRepository.getInstance();
+    private static ClientList clientList = ClientList.getInstance();
     private static ChatRepository chatRepository = ChatRepository.getInstance();
 
     public static void main(String[] args) throws IOException {
@@ -34,19 +33,18 @@ public class Server {
         ServerSocket serverSocket = new ServerSocket(PORT);
         log.info("started on {}", PORT);
         while (!stop) {
-            //Thread.sleep(100);
             serverSocket.setSoTimeout(TIMEOUT);
             Socket socket;
 
             try {
                 socket = serverSocket.accept();
                 try {
-                    new ServerThread(socket, messages);
+                    new ServerThread(socket, messages, clientList);
                 } catch (IOException e) {
                     log.error(e.getMessage());
                     socket.close();
                 }
-            } catch (SocketTimeoutException e) {
+            } catch (SocketTimeoutException ignored) {
             }
         }
         log.info("Server stopped");

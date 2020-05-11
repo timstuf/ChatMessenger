@@ -5,8 +5,6 @@ import com.nure.exceptions.NoUserException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Objects;
-
 @AllArgsConstructor
 @Getter
 public class Chat {
@@ -43,6 +41,8 @@ public class Chat {
 
     @Override
     public int hashCode() {
-        return Objects.hash(user1, user2);
+        int result = 17;
+        result = 31 * result + user1.hashCode() + user2.hashCode();
+        return result;
     }
 }
