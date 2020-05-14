@@ -24,7 +24,7 @@ public class AuthorizationView extends javafx.application.Application{
         if (root != null)
             stage.setScene(new Scene(root));
         else throw new IllegalArgumentException();
-        stage.setTitle("Second Window");
+        stage.setTitle("Authorization");
 
         stage.show();
     }

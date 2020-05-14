@@ -1,24 +1,24 @@
 package com.nure.server;
 
 import com.nure.database.repositories.impl.ChatRepository;
-import com.nure.database.repositories.impl.MessageRepository;
 import com.nure.database.repositories.impl.UserRepository;
 import com.nure.domain.Chat;
 import com.nure.domain.Message;
 import com.nure.parsers.MessageBuilder;
 import com.nure.parsers.MessageParser;
+import javafx.application.Platform;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
 public class ServerThread extends Thread {
     private final UserRepository userRepository = UserRepository.getInstance();
-    private final MessageRepository messageRepository = MessageRepository.getInstance();
     private final ChatRepository chatRepository = ChatRepository.getInstance();
     private final Socket socket;
     private final Map<Chat, List<Message>> messages;
@@ -26,14 +26,15 @@ public class ServerThread extends Thread {
     private final PrintWriter out;
     private final ClientList clientList;
     private String user;
+    private final Controller controller;
 
-    public ServerThread(Socket socket, Map<Chat, List<Message>> messageList, ClientList clientList) throws IOException {
+    public ServerThread(Socket socket, Map<Chat, List<Message>> messageList, ClientList clientList, Controller controller) throws IOException {
         this.socket = socket;
-        // this.messageList = messageList;
         this.messages = messageList;
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())));
         this.clientList = clientList;
+        this.controller = controller;
         start();
     }
 
@@ -43,7 +44,6 @@ public class ServerThread extends Thread {
         log.debug("New socked thread is starting");
         try {
             while (true) {
-                Thread.sleep(1000);
                 String login, from, to, response, password;
                 Chat chat;
                 String requestLine = in.readLine();
@@ -108,6 +108,12 @@ public class ServerThread extends Thread {
                         chat = Chat.asObject(from + " --- " + to);
                         chatRepository.saveIfNotPresent(chat, messages);
                         messages.get(chat).add(message);
+                        Platform.runLater(() -> {
+                            List<Message> forCont = new ArrayList<>();
+                            forCont.add(message);
+                            controller.addMessageToChat(chat, MessageBuilder.showPrettyInChat(forCont));
+                            controller.showOnline(messages.keySet());
+                        });
                         break;
                     default:
                         log.info("Unknown request : {}", requestLine);

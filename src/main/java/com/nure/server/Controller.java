@@ -1,9 +1,6 @@
 package com.nure.server;
 
-import com.nure.database.repositories.impl.ChatRepository;
-import com.nure.database.repositories.impl.MessageRepository;
 import com.nure.domain.Chat;
-import com.nure.parsers.MessageBuilder;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -13,26 +10,39 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Controller implements Initializable {
     @FXML
     public Label textMessages;
     @FXML
     private ListView<String> chatList;
+    private Map<Chat, String> messagesInChat = new ConcurrentHashMap<>();
     private ObservableList<String> observableList = FXCollections.observableArrayList();
-    private ChatRepository chatRepository = ChatRepository.getInstance();
-    private MessageRepository messageRepository = MessageRepository.getInstance();
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        observableList.addAll(chatRepository.getAllChats().stream().map(Chat::asChat).collect(Collectors.toList()));
-        chatList.setItems(observableList);
+
     }
 
     public void showChatMessages(MouseEvent mouseEvent) {
-        Chat chat = Chat.asObject(chatList.getSelectionModel().getSelectedItem());
-        String messages = MessageBuilder.showPrettyInChat((messageRepository.getAllMessagesInChat(chat)));
+        String selected = chatList.getSelectionModel().getSelectedItem();
+        if (selected.equals("")) return;
+        Chat chat = Chat.asObject(selected);
+        String messages = messagesInChat.get(chat);
         textMessages.setText(messages);
+    }
+
+    public void showOnline(Set<Chat> chats) {
+        observableList.setAll(chats.toString());
+        chatList.setItems(observableList);
+    }
+
+    public void addMessageToChat(Chat chat, String messages) {
+        String previousMes = messagesInChat.get(chat);
+        previousMes += messages;
+        messagesInChat.put(chat, previousMes);
     }
 }

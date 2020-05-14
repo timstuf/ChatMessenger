@@ -36,7 +36,7 @@ public class ClientList {
         return list.toString();
     }
 
-    public boolean сontainsName(String name) {
-        return userNames.contains(name);
+    public List<String> getClients() {
+        return userNames;
     }
 }

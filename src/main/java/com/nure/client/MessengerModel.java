@@ -37,7 +37,7 @@ public class MessengerModel {
             e.printStackTrace();
         }
         new Timer().scheduleAtFixedRate(new UpdateList(this),
-                Constants.ONLINE_DELAY, Constants.ONLINE_PERIOD);
+                Constants.DELAY, Constants.PERIOD);
 //        new Timer().scheduleAtFixedRate(new UpdateOnlineList(this),
 //                Constants.ONLINE_DELAY, Constants.ONLINE_PERIOD);
 //        new Timer().scheduleAtFixedRate(new UpdateMessageList(this),

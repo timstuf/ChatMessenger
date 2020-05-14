@@ -73,12 +73,11 @@ public class MessageRepository implements Repository {
     }
 
     public void saveAllNewMessages(List<Message> messages) {
-        Message loadedMessage;
+
         try (Session session = ConnectionFactory.sessionFactory.openSession()) {
             session.beginTransaction();
             for (Message message : messages) {
-                loadedMessage = session.get(Message.class, message.getId());
-                if (loadedMessage == null)
+                if (message.getId() == null)
                     session.save(message);
             }
             session.getTransaction().commit();
