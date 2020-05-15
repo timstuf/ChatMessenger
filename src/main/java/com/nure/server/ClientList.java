@@ -39,4 +39,8 @@ public class ClientList {
     public List<String> getClients() {
         return userNames;
     }
+
+    public boolean contains(String login) {
+        return userNames.contains(login);
+    }
 }

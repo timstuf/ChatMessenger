@@ -45,19 +45,21 @@ public class User {
         this.status = Status.ACTIVE;
     }
 
+    public User(String login) {
+        this.login = login;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return id.equals(user.id) &&
-                login.equals(user.login) &&
-                password.equals(user.password);
+        return login.equals(user.login);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, login, password);
+        return Objects.hash(login);
     }
     public enum Status {ACTIVE, LOGGED_OUT}
 }

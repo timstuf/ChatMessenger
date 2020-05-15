@@ -1,27 +1,30 @@
 package com.nure.server;
 
 import com.nure.domain.Chat;
+import com.nure.domain.Message;
+import com.nure.parsers.MessageBuilder;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 
 import java.net.URL;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Controller implements Initializable {
+
     @FXML
-    public Label textMessages;
+    public ScrollPane textMessages;
     @FXML
     private ListView<String> chatList;
-    private Map<Chat, String> messagesInChat = new ConcurrentHashMap<>();
+    private Map<String, String> messagesInChat = new ConcurrentHashMap<>();
     private ObservableList<String> observableList = FXCollections.observableArrayList();
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -29,20 +32,41 @@ public class Controller implements Initializable {
 
     public void showChatMessages(MouseEvent mouseEvent) {
         String selected = chatList.getSelectionModel().getSelectedItem();
-        if (selected.equals("")) return;
+        if (selected == null) return;
         Chat chat = Chat.asObject(selected);
-        String messages = messagesInChat.get(chat);
-        textMessages.setText(messages);
+        String chatStr = chat.toString();
+        if (!messagesInChat.containsKey(chatStr)) {
+            chatStr = chat.invertChat();
+        }
+        String messages = messagesInChat.get(chatStr);
+        Label label = new Label(messages);
+        textMessages.setContent(label);
+    }
+
+    public void setMessages(Map<Chat, List<Message>> messagesMap) {
+        for (Map.Entry<Chat, List<Message>> entry : messagesMap.entrySet()) {
+            messagesInChat.put(entry.getKey().toString(), MessageBuilder.showPrettyInChat(entry.getValue()));
+        }
     }
 
     public void showOnline(Set<Chat> chats) {
-        observableList.setAll(chats.toString());
+        String chatsString = chats.toString();
+        String[] list = chatsString.substring(1, chatsString.length() - 1).split(", ");
+        observableList.setAll(Arrays.asList(list));
         chatList.setItems(observableList);
     }
 
     public void addMessageToChat(Chat chat, String messages) {
-        String previousMes = messagesInChat.get(chat);
+        String chatStr = chat.toString();
+        if (!messagesInChat.containsKey(chatStr)) {
+            chatStr = chat.invertChat();
+            if (!messagesInChat.containsKey(chatStr)) {
+                messagesInChat.put(chatStr, "");
+            }
+        }
+        String previousMes = messagesInChat.get(chatStr);
         previousMes += messages;
-        messagesInChat.put(chat, previousMes);
+        messagesInChat.put(chatStr, previousMes);
+        showChatMessages(null);
     }
 }

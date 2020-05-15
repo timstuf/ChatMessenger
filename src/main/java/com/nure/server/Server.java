@@ -4,10 +4,8 @@ import com.nure.database.repositories.impl.ChatRepository;
 import com.nure.database.repositories.impl.UserRepository;
 import com.nure.domain.Chat;
 import com.nure.domain.Message;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+import javafx.application.Platform;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
@@ -23,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static com.nure.util.Constants.PORT;
 
 @Slf4j
-public class Server extends javafx.application.Application {
+public class Server extends Thread {
     private Controller controller;
     private static volatile boolean stop = false;
     private static final int TIMEOUT = 500;
@@ -36,12 +34,16 @@ public class Server extends javafx.application.Application {
         controller = thatController;
     }
 
-    public void run() throws IOException {
+    @SneakyThrows
+    public void run() {
         loadPreviousMessages();
         quitCommandThread();
         ServerSocket serverSocket = new ServerSocket(PORT);
         log.info("started on {}", PORT);
-        controller.showOnline(messages.keySet());
+        Platform.runLater(() -> {
+            controller.showOnline(messages.keySet());
+            controller.setMessages(messages);
+        });
         while (!stop) {
             serverSocket.setSoTimeout(TIMEOUT);
             Socket socket;
@@ -86,19 +88,5 @@ public class Server extends javafx.application.Application {
                 }
             }
         }).start();
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/server.fxml"));
-        Parent root = loader.load();
-
-        //Get controller of scene2
-        Controller controller = loader.getController();
-        //Show scene 2 in new window
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root));
-        stage.setTitle("Second Window");
-        stage.show();
     }
 }

@@ -53,6 +53,11 @@ public class ServerThread extends Thread {
                     case "CONNECT":
                         //log.debug("connect");
                         login = in.readLine();
+                        if (clientList.contains(login)) {
+                            response = "User with specified login is already online";
+                            out.println(response);
+                            out.flush();
+                        }
                         password = in.readLine();
                         response = userRepository.tryLogin(login, password);
                         if (response.equals("")) {
@@ -112,6 +117,7 @@ public class ServerThread extends Thread {
                             List<Message> forCont = new ArrayList<>();
                             forCont.add(message);
                             controller.addMessageToChat(chat, MessageBuilder.showPrettyInChat(forCont));
+                            //TODO: make sure selection stays the same and update only when necessary
                             controller.showOnline(messages.keySet());
                         });
                         break;
