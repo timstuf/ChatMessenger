@@ -4,27 +4,19 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="400.0" prefWidth="600.0" stylesheets="css/main.css"
-            xmlns="http://javafx.com/javafx/8.0.171" fx:controller="com.nure.server.Controller">
-   <Label contentDisplay="CENTER" layoutX="155.0" layoutY="38.0" prefHeight="20.0" prefWidth="78.0"
-          stylesheets="@css/main.css" text="Messages" textAlignment="CENTER">
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="400.0" prefWidth="600.0" styleClass="body"
+            stylesheets="css/main.css" xmlns="http://javafx.com/javafx/8.0.171"
+            fx:controller="com.nure.server.Controller">
+   <Label layoutX="155.0" layoutY="38.0" prefHeight="20.0" prefWidth="78.0" stylesheets="@css/main.css" text="Messages">
    </Label>
-   <AnchorPane layoutX="22.0" layoutY="77.0" prefHeight="297.0" prefWidth="344.0" styleClass="window"
-               stylesheets="@css/main.css">
-      <children>
-         <ScrollPane fx:id="textMessages" layoutX="4.0" layoutY="5.0" prefHeight="288.0" prefWidth="341.0">
-            <content>
-               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0"/>
-            </content>
-         </ScrollPane>
-      </children>
+   <AnchorPane layoutX="22.0" layoutY="77.0" prefHeight="297.0" prefWidth="344.0">
+      <ScrollPane fx:id="textMessages" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" layoutX="2.0"
+                  layoutY="5.0" prefHeight="288.0" prefWidth="341.0" styleClass="window"/>
    </AnchorPane>
-   <AnchorPane layoutX="386.0" layoutY="77.0" prefHeight="297.0" prefWidth="192.0" styleClass="window"
-               stylesheets="@css/main.css">
-      <ListView fx:id="chatList" layoutX="2.0" layoutY="3.0" onMouseClicked="#showChatMessages" prefHeight="288.0"
-                prefWidth="200.0"/>
+   <AnchorPane layoutX="386.0" layoutY="77.0" prefHeight="297.0" prefWidth="192.0">
+      <ListView fx:id="chatList" layoutX="-14.0" layoutY="5.0" onMouseClicked="#showChatMessages" prefHeight="288.0"
+                prefWidth="200.0" styleClass="window"/>
    </AnchorPane>
-   <Label contentDisplay="CENTER" layoutX="456.0" layoutY="38.0" prefHeight="20.0" prefWidth="52.0"
-          stylesheets="@css/main.css" text="Chats" textAlignment="CENTER">
+   <Label layoutX="447.0" layoutY="38.0" prefHeight="20.0" prefWidth="52.0" stylesheets="@css/main.css" text="Chats">
    </Label>
 </AnchorPane>

@@ -28,7 +28,8 @@ public class AuthorizationModel {
         }
     }
 
-    public String logIn(String login, String password) {
+    public String logIn(String ip, String login, String password) {
+        if (!ip.equals(Constants.IP)) return "Cannot connect to this server";
         String answer = "";
         try {
             out.write("CONNECT"+ "\n");
@@ -51,7 +52,7 @@ public class AuthorizationModel {
                 //Show scene 2 in new window
                 Stage stage = new Stage();
                 stage.setScene(new Scene(root));
-                stage.setTitle("Second Window");
+                stage.setTitle("Chat");
                 stage.show();
                 answer = "";
             }
@@ -61,7 +62,8 @@ public class AuthorizationModel {
         return answer;
     }
 
-    public String registerUser(String login, String password) {
+    public String registerUser(String ip, String login, String password) {
+        if (!ip.equals(Constants.IP)) return "Cannot connect to this server";
         String answer = "";
         try {
             out.write("NEW" + "\n");

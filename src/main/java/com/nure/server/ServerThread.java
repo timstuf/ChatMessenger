@@ -54,7 +54,7 @@ public class ServerThread extends Thread {
                         //log.debug("connect");
                         login = in.readLine();
                         if (clientList.contains(login)) {
-                            response = "User with specified login is already online";
+                            response = "User with login " + login + " is already online";
                             out.println(response);
                             out.flush();
                         }
@@ -94,7 +94,7 @@ public class ServerThread extends Thread {
                         from = in.readLine();
                         to = in.readLine();
                         chat = Chat.asObject(from + " --- " + to);
-                        out.println(MessageBuilder.convertToJson(messages.get(chat)) + "\n");
+                        out.println(MessageBuilder.convertToJson(messages.getOrDefault(chat, new ArrayList<>())) + "\n");
                         out.println("END");
                         out.flush();
                         break;
@@ -117,7 +117,6 @@ public class ServerThread extends Thread {
                             List<Message> forCont = new ArrayList<>();
                             forCont.add(message);
                             controller.addMessageToChat(chat, MessageBuilder.showPrettyInChat(forCont));
-                            //TODO: make sure selection stays the same and update only when necessary
                             controller.showOnline(messages.keySet());
                         });
                         break;

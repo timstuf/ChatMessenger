@@ -20,11 +20,10 @@ public class Application extends javafx.application.Application {
             new Server(controller).start();
             //Show scene 2 in new window
             Stage stage = new Stage();
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
             stage.setTitle("Server");
             stage.show();
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }

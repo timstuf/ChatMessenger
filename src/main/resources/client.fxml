@@ -2,19 +2,19 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="400.0" prefWidth="600.0"
-            xmlns="http://javafx.com/javafx/8.0.171" fx:controller="com.nure.client.MessengerController">
-    <Label layoutX="455.0" layoutY="55.0" text="Your name"/>
-    <Label fx:id="name" layoutX="468.0" layoutY="79.0" text="Name"/>
-    <Label layoutX="470.0" layoutY="126.0" text="Online"/>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="400.0" prefWidth="600.0" styleClass="body"
+            stylesheets="css/main.css" xmlns="http://javafx.com/javafx/8.0.171"
+            fx:controller="com.nure.client.MessengerController">
+    <Label layoutX="442.0" layoutY="45.0" stylesheets="@css/main.css" text="Your name"/>
+    <Label id="name" fx:id="name" layoutX="462.0" layoutY="80.0" stylesheets="@css/main.css" text="Name"/>
+    <Label layoutX="459.0" layoutY="134.0" stylesheets="@css/main.css" text="Online"/>
     <ListView fx:id="chatList" layoutX="384.0" layoutY="170.0" onMouseClicked="#showChatMessages" prefHeight="200.0"
-              prefWidth="200.0"/>
-    <Label layoutX="181.0" layoutY="31.0" text="Chat"/>
-    <TextField fx:id="text" layoutX="32.0" layoutY="339.0" prefHeight="25.0" prefWidth="185.0"/>
-    <Button fx:id="send" layoutX="258.0" layoutY="339.0" mnemonicParsing="false" onAction="#sendMessage" text="Send"/>
-    <ScrollPane fx:id="textMessages" layoutX="32.0" layoutY="100.0" prefHeight="200.0" prefWidth="289.0">
-        <content>
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0"/>
-        </content>
-    </ScrollPane>
+              prefWidth="200.0" styleClass="window" stylesheets="@css/main.css"/>
+    <Label layoutX="159.0" layoutY="45.0" stylesheets="@css/main.css" text="Chat"/>
+    <TextField fx:id="text" layoutX="32.0" layoutY="339.0" prefHeight="25.0" prefWidth="185.0"
+               stylesheets="@css/main.css"/>
+    <Button fx:id="send" layoutX="232.0" layoutY="339.0" mnemonicParsing="false" onAction="#sendMessage"
+            prefHeight="25.0" prefWidth="84.0" text="Send"/>
+    <ScrollPane fx:id="textMessages" hbarPolicy="NEVER" layoutX="32.0" layoutY="100.0" prefHeight="200.0"
+                prefWidth="289.0" styleClass="window" stylesheets="@css/main.css"/>
 </AnchorPane>

@@ -9,6 +9,7 @@ import com.nure.domain.User;
 import com.nure.exceptions.NoUserException;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -42,8 +43,9 @@ public class MessageBuilder {
 
     public static String showPrettyInChat(List<Message> messages) {
         StringBuilder strMessages = new StringBuilder();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         for (Message message:messages) {
-            String mes = message.getSentTime()+ "    "+message.getUserFrom().getLogin()+":    "+message.getText()+'\n';
+            String mes = message.getSentTime().format(formatter) + "    " + message.getUserFrom().getLogin() + ":    " + message.getText() + '\n';
             strMessages.append(mes);
         }
         return strMessages.toString();

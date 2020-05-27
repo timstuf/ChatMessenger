@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.text.Text;
 
 import java.net.Socket;
 import java.net.URL;
@@ -41,13 +42,16 @@ public class MessengerController implements Initializable {
     }
     public void showChatMessages(MouseEvent mouseEvent) {
         String user2 = chatList.getSelectionModel().getSelectedItem();
-        Label text = new Label(model.showChatMessages(user2));
+        Text text = new Text(model.showChatMessages(user2));
+        text.setWrappingWidth(textMessages.getWidth());
         textMessages.setContent(text);
+
     }
 
     public void showChatMessages(String messages) {
-        Label text = new Label(messages);
-        textMessages.setContent(text);
+        Text label = new Text(messages);
+        label.setWrappingWidth(textMessages.getWidth());
+        textMessages.setContent(label);
     }
 
     public void showOnline(ObservableList<String> list, Optional<String> selection) {
@@ -59,6 +63,7 @@ public class MessengerController implements Initializable {
     public void sendMessage(ActionEvent event) {
         if (text.getText().equals("")) return;
         model.sendMessage(text.getText(), name.getText(), chatList.getSelectionModel().getSelectedItem());
+        text.setText("");
     }
 
 }

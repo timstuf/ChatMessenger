@@ -49,7 +49,7 @@ public class MessageParser {
     }
 
     public static List<String> getUsers(String users) {
-        List<String> usersList = new ArrayList<>();
+        if (users.equals("[]")) return new ArrayList<>();
         String[] us = users.substring(1, users.length() - 1).split(", ");
         return Arrays.asList(us);
 //        ObjectMapper mapper = new ObjectMapper();
