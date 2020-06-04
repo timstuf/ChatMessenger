@@ -18,18 +18,19 @@ public class AuthorizationModel {
     private String login;
     private Socket socket;
 
-    public AuthorizationModel(String host) {
-        try{
-            socket = new Socket(host, Constants.PORT);
-            out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void connectToServer(String server) throws IOException {
+        socket = new Socket(server, Constants.PORT);
+        out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
 
-    public String logIn(String ip, String login, String password) {
-        if (!ip.equals(Constants.IP)) return "Cannot connect to this server";
+    String logIn(String ip, String login, String password) {
+        try {
+            connectToServer(ip);
+        } catch (IOException e) {
+            return "Cannot connect to this server";
+        }
+        // if (!ip.equals(Constants.IP)) return "Cannot connect to this server";
         String answer = "";
         try {
             out.write("CONNECT"+ "\n");
@@ -38,8 +39,7 @@ public class AuthorizationModel {
             out.flush();
             answer = in.readLine();
             log.debug("answer: {}", answer);
-            if(answer.equals("OK"))
-            {
+            if(answer.equals("OK")) {
                 //Load second scene
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/client.fxml"));
                 Parent root = loader.load();
@@ -62,8 +62,13 @@ public class AuthorizationModel {
         return answer;
     }
 
-    public String registerUser(String ip, String login, String password) {
-        if (!ip.equals(Constants.IP)) return "Cannot connect to this server";
+    String registerUser(String ip, String login, String password) {
+        try {
+            connectToServer(ip);
+        } catch (IOException e) {
+            return "Cannot connect to this server";
+        }
+        //if (!ip.equals(Constants.IP)) return "Cannot connect to this server";
         String answer = "";
         try {
             out.write("NEW" + "\n");

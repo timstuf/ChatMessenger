@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 import java.net.Socket;
 import java.net.URL;
@@ -16,17 +17,17 @@ import java.util.ResourceBundle;
 public class MessengerController implements Initializable {
     @FXML
     public ScrollPane textMessages;
-    private MessengerModel model;
+    @FXML
+    public Button logOut;
     @FXML
     public Label name;
     @FXML
     public ListView<String> chatList;
-
     @FXML
     public TextField text;
     @FXML
     public Button send;
-
+    private MessengerModel model;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
     }
@@ -45,7 +46,6 @@ public class MessengerController implements Initializable {
         Text text = new Text(model.showChatMessages(user2));
         text.setWrappingWidth(textMessages.getWidth());
         textMessages.setContent(text);
-
     }
 
     public void showChatMessages(String messages) {
@@ -66,4 +66,9 @@ public class MessengerController implements Initializable {
         text.setText("");
     }
 
+    public void logOut(ActionEvent event) {
+        model.logOut();
+        Stage stage = (Stage) text.getScene().getWindow();
+        stage.close();
+    }
 }

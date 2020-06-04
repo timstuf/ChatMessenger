@@ -41,3 +41,20 @@
     -fx-background-color: #C1CAD8;
     -fx-text-fill: white;
 }
+
+.button {
+    background: #76B3FA;
+    border-radius: 100px;
+    padding: 20px 60px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.45em;
+    margin: 0 15px;
+}
+
+/* Hover state animation applied here */
+.button:hover {
+    -webkit-animation: hover 1200ms linear 2 alternate;
+    animation: hover 1200ms linear 2 alternate;
+}
+

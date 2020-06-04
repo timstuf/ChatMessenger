@@ -20,6 +20,7 @@ public class MessengerModel {
     private BufferedReader in;
     private Socket socket;
     private String login;
+    private Timer timer;
     @Setter
     private Map<String, String> chatMessages = new HashMap<>();
     private MessengerController controller;
@@ -36,12 +37,9 @@ public class MessengerModel {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        new Timer().scheduleAtFixedRate(new UpdateList(this),
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new UpdateList(this),
                 Constants.DELAY, Constants.PERIOD);
-//        new Timer().scheduleAtFixedRate(new UpdateOnlineList(this),
-//                Constants.ONLINE_DELAY, Constants.ONLINE_PERIOD);
-//        new Timer().scheduleAtFixedRate(new UpdateMessageList(this),
-//                Constants.MESSAGE_DELAY, Constants.MESSAGE_PERIOD);
     }
 
     public void setOnlineUsers(List<String> onlineUsers) {
@@ -66,5 +64,16 @@ public class MessengerModel {
         out.write(text + '\n');
         out.write("END" + '\n');
         out.flush();
+    }
+
+    void logOut() {
+        try {
+            out.close();
+            in.close();
+            socket.close();
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+        timer.cancel();
     }
 }

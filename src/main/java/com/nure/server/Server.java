@@ -61,6 +61,7 @@ public class Server extends Thread {
         log.info("Server stopped");
         userRepository.logEveryoneOut();
         saveAllNewMessages();
+        Platform.exit();
     }
     private static void saveAllNewMessages() {
         chatRepository.saveAllNewMessages(messages);

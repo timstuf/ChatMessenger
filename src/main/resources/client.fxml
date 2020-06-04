@@ -5,8 +5,8 @@
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="400.0" prefWidth="600.0" styleClass="body"
             stylesheets="css/main.css" xmlns="http://javafx.com/javafx/8.0.171"
             fx:controller="com.nure.client.MessengerController">
-    <Label layoutX="442.0" layoutY="45.0" stylesheets="@css/main.css" text="Your name"/>
-    <Label id="name" fx:id="name" layoutX="462.0" layoutY="80.0" stylesheets="@css/main.css" text="Name"/>
+    <Label layoutX="442.0" layoutY="65.0" stylesheets="@css/main.css" text="Your name"/>
+    <Label id="name" fx:id="name" layoutX="464.0" layoutY="100.0" stylesheets="@css/main.css" text="Name"/>
     <Label layoutX="459.0" layoutY="134.0" stylesheets="@css/main.css" text="Online"/>
     <ListView fx:id="chatList" layoutX="384.0" layoutY="170.0" onMouseClicked="#showChatMessages" prefHeight="200.0"
               prefWidth="200.0" styleClass="window" stylesheets="@css/main.css"/>
@@ -17,4 +17,6 @@
             prefHeight="25.0" prefWidth="84.0" text="Send"/>
     <ScrollPane fx:id="textMessages" hbarPolicy="NEVER" layoutX="32.0" layoutY="100.0" prefHeight="200.0"
                 prefWidth="289.0" styleClass="window" stylesheets="@css/main.css"/>
+    <Button fx:id="logOut" layoutX="459.0" layoutY="30.0" mnemonicParsing="false" text="Log out" onAction="#logOut"
+            stylesheets="css/main.css"/>
 </AnchorPane>

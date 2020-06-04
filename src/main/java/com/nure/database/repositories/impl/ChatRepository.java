@@ -18,7 +18,6 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class ChatRepository implements Repository {
     private static volatile ChatRepository chatRepository;
-    private UserRepository userRepository = UserRepository.getInstance();
     private MessageRepository messageRepository = MessageRepository.getInstance();
 
     private ChatRepository() {
@@ -34,10 +33,6 @@ public class ChatRepository implements Repository {
                 }
             }
         return local;
-    }
-
-    public void saveChat(Chat chat) {
-        save(chat);
     }
 
     public Map<Chat, List<Message>> getAllMessagesInAllChats() {

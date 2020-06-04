@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.net.Socket;
 import java.util.List;
 import java.util.Optional;
 import java.util.TimerTask;
@@ -16,15 +17,22 @@ import java.util.TimerTask;
 @Slf4j
 public class UpdateList extends TimerTask {
     private MessengerModel model;
+    private Socket socket;
     private BufferedWriter out;
     private BufferedReader in;
     private String login;
+    private volatile boolean stop = false;
 
     public UpdateList(MessengerModel model) {
         this.model = model;
+        socket = model.getSocket();
         out = model.getOut();
         in = model.getIn();
         login = model.getLogin();
+    }
+
+    private boolean isSocketClosed() {
+        return socket.isClosed();
     }
 
     @Override
@@ -35,6 +43,7 @@ public class UpdateList extends TimerTask {
 
     void updateChatMessages() {
         if (!model.getController().getSelectedUser().isPresent()) {
+            return;
         } else {
             String user2 = model.getController().getSelectedUser().get();
             try {
@@ -89,5 +98,9 @@ public class UpdateList extends TimerTask {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setStop(boolean stop) {
+        this.stop = stop;
     }
 }

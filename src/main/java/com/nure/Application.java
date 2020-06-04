@@ -1,7 +1,6 @@
 package com.nure;
 
 import com.nure.server.Controller;
-import com.nure.server.Server;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -17,7 +16,7 @@ public class Application extends javafx.application.Application {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/server.fxml"));
             Parent root = loader.load();
             Controller controller = loader.getController();
-            new Server(controller).start();
+            new com.nure.server.Server(controller).start();
             //Show scene 2 in new window
             Stage stage = new Stage();
             Scene scene = new Scene(root);

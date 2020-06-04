@@ -44,12 +44,12 @@ public class ServerThread extends Thread {
         log.debug("New socked thread is starting");
         try {
             while (true) {
+                if (socket.isClosed()) break;
                 String login, from, to, response, password;
                 Chat chat;
                 String requestLine = in.readLine();
                 //log.debug("Request line : {}", requestLine);
                 switch (requestLine) {
-                    //TODO: check if user is not already online
                     case "CONNECT":
                         //log.debug("connect");
                         login = in.readLine();
